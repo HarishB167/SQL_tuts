@@ -1,0 +1,55 @@
+Section 1 : Getting Started
+
+- What is SQL
+? Database
+is a collection of data stored in a format that can easibly be
+accessed.
+? DBMS are used to manage data
+Database Management System
+? 2 categories of DBMS
+Relational : Tables linked to each other, using relationships.
+SQL - Structured Query Language
+Ex - MySQL, SQL Server, Oracle
+NoSQL : Don't have tables or relationships.
+Don't understand SQL.
+
+- Installing MySQL
+? Create connection with local mysql as
+Connection name : Local instance
+Connection method : TCP/IP
+Hostname : 127.0.0.1
+Port : 3306
+Username : root
+Passwrod : <password>
+Test the connection
+? Restart mysql on Andronix
+service mysql restart
+
+- Creating the Databases
+? Create database from script
+? Each database has objects
+Tables : where data is stored
+Views : virtual tables (combine data from multiple tables
+and put them in a view) (for creating reports)
+Stored Procedures : Programs stored in database for querying data
+Functions : Programs stored in database for querying data
+? Every row in table is called record
+
+- What you'll Learn
+? 1st 4 sections
+Retrieving, Inserting, Updating, Deleting Data
+? 3 sections
+Summarizing Data, Writing Complex Queries, Built-in Functions
+? 2 sections
+Views, Stored Procedures/Functions
+? 4 sections
+Triggers, Events, Transactions, Concurrency
+? 1 section : Designing Databases
+? 2 sections
+Indexing for High performance
+Securing Databases
+
+
+
+
+
