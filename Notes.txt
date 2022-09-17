@@ -48,6 +48,101 @@ Triggers, Events, Transactions, Concurrency
 ? 2 sections
 Indexing for High performance
 Securing Databases
+----------------------------------------------------------------------
+
+Section 2 : Retrieving data from a single table
+
+- The SELECT statement
+? Using a database - USE <dbname>;
+? SELECT <column names, > FROM <table name>;
+? Selecting all columns : SELECT * FROM <table name>;
+? Commenting : prepend statement with '-- '
+? Order of clauses : Select, From, Where, Order By, Limit
+
+- The SELECT Clause
+? All Columns : SELECT * ...
+? Some columns : SELECT col1, col2, ...
+? With arithmetic operation
+SELECT col1, (col2 + 10) * 100 ...
+? Arithmetic operaitons : +, -, *, /, %
+? With alias :
+SELECT col1, col2 + 10 AS discount_factor ... ; 
+SELECT col1, col2 + 10 AS 'Discount Factor' ... ;
+? Getting unique result
+SELECT DISTINCT col1 ...;
+
+- The WHERE Clause
+? For filtering data
+? WHERE col1 > 3000;
+? WHERE state = 'VA';
+? Date values : WHERE birth_date > '1990-01-01'
+? Comparison operators : >, >=, <, <=, =, != or <>
+
+- The And, Or, Not operators
+? WHERE ... AND (... OR ...);
+? WHERE ... OR ...;
+? WHERE ... OR NOT ...
+? WHERE NOT (... OR ...)
+
+- The IN operator
+? WHERE col1 IN (val1, val2, val3)
+? WHERE col1 NOT IN (val1, val2, val3)
+
+- The BETWEEN operator
+? WHERE col1 BETWEEN val1 AND val3;
+both values are inclusive.
+? Can be used for date values. (YYYY-MM-DD)
+
+- The LIKE operator
+? Match a string pattern
+? Case insensitive
+? Old operator
+? % - any number of chars.
+? _ - any one character. : _y, b___y
+? Starting with b : WHERE last_name LIKE 'b%';
+? WHERE last_name LIKE '%b%';
+? WHERE phone NOT LIKE '%9';
+
+- The REGEXP operator
+? Regular expressions
+? Case insensitive
+? field in name : WHERE last_name REGEXP 'field';
+? ^ - beginning of string : ^field
+? $ - end of string : field$
+? | - or operator : field|mac
+? ge/ie/me : '[gim]e'
+? range : [a-h], [a-z] etc.
+
+- The IS NULL operator
+? WHERE col1 IS NULL
+? WHERE col1 IS NOT NULL
+
+- The ORDER BY Clause
+? Sorting data in sql queries
+? By default records are sorted by ID (it's primary key)
+? SELECT * FROM table1 ORDER BY col1
+? Descending : ORDER BY col1 DESC
+? Multiple cols :
+ORDER BY col1 DESC, col2
+Main sort is of col1 then of col2.
+? Can use expressions
+ORDER BY col1 * col2 DESC
+? In MySQL, columns not in select clause can be used in order by.
+? Can sort by alias
+SELECT col1, col2, col2+1 as alias FROM ...
+ORDER BY alias
+? Avoid sorting with column positions, and use column names.
+
+- The LIMIT Clause
+? Limiting no of records returned by query
+? SELECT * FROM table1 LIMIT 3;
+? Using offset 
+Setting start of data
+For pagination
+SELECT * FROM table1 LIMIT <offset>, <records count>
+SELECT * FROM table1 LIMIT 6, 3
+? LIMIT clause always comes at end.
+
 
 
 
