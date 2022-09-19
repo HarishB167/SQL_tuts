@@ -259,10 +259,82 @@ UNION
 SELECT ...
 FROM ... WHERE ...
 ? Use example : combining table of orders and archieved orders, setting label column value conditionally for a table.
+----------------------------------------------------------------------
 
+Section 4 : Inserting, Updating and Deleting Data
 
+- Column Attributes
+* Datatype, Primary key, not null, auto increment, default/expression
+* Datatype - int(n), varchar(50), char(n), date etc
 
+- Inserting a single row
+* INSERT INTO table
+VALUES (DEFAULT, col2val, col3val, NULL/DEFAULT, ...)
+* INSERT INTO table (col2, col3, ...)
+VALUES (col2val, col3val, ...)
 
+- Inserting Multiple Rows
+* INSERT INTO table (cols, ...)
+VALUES (colvals,...), (colvals,...), (colvals,...);
+
+- Inserting Hierarchical Rows
+* When a record depends on multiple table, order and order items. Id of created order is required to create order items.
+* Id of last created record, getting it by built in function 
+LAST_INSERT_ID()
+* INSERT ... of parent record
+INSERT INTO order_items (...)
+VALUES (LAST_INSERT_ID(), colvals, ...),
+    (LAST_INSERT_ID(), colvals, ...),
+    (LAST_INSERT_ID(), colvals, ...)
+
+- Creating a Copy of a table
+* Using subquery : statement part of another statement.
+* CREATE TABLE table1 AS
+SELECT * FROM table2
+* Primary key and auto increment information is not copied.
+* Subquery in insert statement
+INSERT INTO table1
+SELECT *
+FROM table2
+WHERE ...some condition...
+* Deleting data not table from table -> Truncate table.
+
+- Updating a Single Row
+* UPDATE table1
+SET col1 = val1, col2 = val2
+WHERE ...condition...
+* value can be 
+DEFAULT, NULL depending upon it is nullable or not.
+calcuation on a column -> SET col1 = col2val * 0.5, ...
+
+- Updating Multiple Rows
+* Condition in WHERE clause is changed.
+* UPDATE table1
+SET col1 = val1, col2 = val2
+WHERE ...condition...
+* WHERE client_id IN (1,2,3,4)
+* Updating all - leave WHERE clause.
+* Mysql workbench runs in safe updatd mode and allows only update
+of single record. Another client will work fine.
+* Disabling safe updates -  Preferences > SQL Editor > Untick Safe updates > Reconnect to database.
+
+- Using Subqueries in Updates
+* In WHERE clause
+* Getting id from db using name and then updating
+* UPDATE table1
+SET col1 = val1, col2 = val2
+WHERE client_id = (SELECT client_id FROM clients
+WHERE name = 'Myworks')
+* UPDATE table1
+SET col1 = val1, col2 = val2
+WHERE client_id IN (SELECT client_id FROM clients
+WHERE state IN ('CA', 'NY'))
+
+- Deleting Rows
+* All records delete : DELETE FROM table
+* Using where clause to delete specific records
+DELETE FROM table
+WHERE ...condition...
 
 
 
