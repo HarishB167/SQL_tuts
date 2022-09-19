@@ -142,6 +142,127 @@ For pagination
 SELECT * FROM table1 LIMIT <offset>, <records count>
 SELECT * FROM table1 LIMIT 6, 3
 ? LIMIT clause always comes at end.
+----------------------------------------------------------------------
+
+Section 3 : Retrieving data from multiple tables
+
+- Inner Joins
+? SELECT * FROM orders
+JOIN customers ON orders.customer_id = customers.customer_id
+? SELECT *, col_of_table1, col_of_table2 FROM table1
+JOIN table2 ON table1.col1 = table2.col1
+? table1 comes first in result.
+? Getting one out of 2 custome_id
+SELECT order_id, orders.customer_id
+FROM orders
+JOIN customers ON orders.customer_id = customers.customer_id
+? Using Alias
+SELECT order_id, o.customer_id
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+? 2 types of join : Inner (default) and Outer
+
+- Joining Across Databases
+? SELECT *
+FROM table1
+JOIN other_db.table2 tb2
+ON table1.col1 = tb2.col1
+? Access other database's tables by prefixing db name
+db_name.table_name
+
+- Self Joins
+? When a column is linked to another column of same table
+Manager as an employee in employee table, every employee has 
+manager, so manager column contains employee id.
+? Joining with self requires using aliases
+? Every column requires alias, as they exist in both tables.
+? SELECT e.employee_id, e.first_name, m.first_name AS manager
+FROM employees e
+JOIN employees m
+ON e.reports_to = m.employee_id
+
+- Compound Join Conditions
+? For table having multiple primary key column (Composite primary key)
+? SELECT *
+FROM order_items oi
+JOIN order_items_notes oin
+    ON oi.order_id = oin.order_id
+    AND oi.product_id = oin.product_id
+
+- Implicit Join Syntax
+? SELECT *
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+same as
+SELECT *
+FROM orders o, customers c
+WHERE o.customer_id = c.customer_id
+? This is NOT suggested to use.
+As, fail to use WHERE clause will create cross join (All records of one
+table with every record of another table).
+
+- Outer Joins
+? 2 types of outer joins : Left and Right
+? Left outer join includes all rows of left table, irrespective of
+condition.
+? Right outer join includes all rows of right table, irrespective 
+of condition.
+? Outer keyword is optional :
+left join : LEFT JOIN is same as LEFT OUTER JOIN
+right join : RIGHT JOIN is same as RIGHT OUTER JOIN
+
+- Outer joins between multiple tables
+? SELECT *
+FROM table1 t1
+LEFT JOIN table2 t2 ON ...
+LEFT JOIN table3 t3 ON ...
+? Try to use only LEFT JOIN in multiple tables, to avoid confusion.
+
+- Self Outer Joins
+? Similar to inner self joins
+? But includes all rows, with possilbe null opposition column
+
+- The Using Clause
+? When columns of table have same name
+? SELECT ...
+FROM table1 t1
+JOIN table2 t2 USING (col1)
+LEFT JOIN table3 t3 USING (col2, col3)
+
+- Natural Joins
+? DB engine automatically joins based on same column names.
+? Easy to code, but dangerous, can produce unexpected result.
+? Not recommended to use.
+? SELECT ...
+FROM table t
+NATURAL JOIN table2 t2
+
+- Cross Joins
+? Join / map every record of one table with every record of
+another table.
+? Doesn't have condition
+? SELECT ...
+FROM table1 t1
+CROSS JOIN table2 t2
+? Use example - Combining table sizes with table colors.
+? Using CROSS is explicit syntax, as it is more clear.
+? Implicit syntax - using multiple tables in FROM clause
+SELECT ... FROM table1, table2;
+
+- Unions
+? For joining rows (adding rows to result set).
+? No of columns returned of both query should be same.
+? Name of columns is based on first query.
+? SELECT ...
+FROM ... WHERE ...
+UNION
+SELECT ...
+FROM ... WHERE ...
+? Use example : combining table of orders and archieved orders, setting label column value conditionally for a table.
+
+
+
+
 
 
 
