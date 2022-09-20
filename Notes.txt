@@ -335,7 +335,54 @@ WHERE state IN ('CA', 'NY'))
 * Using where clause to delete specific records
 DELETE FROM table
 WHERE ...condition...
+----------------------------------------------------------------------
 
+Section 5 : Summarizing Data
+
+- Aggregating Functions
+? For generating reports
+? MAX, MIN, AVG, SUM, COUNT
+? Can be applied on dates and strings
+? Only operate on Non Null values
+Count ignores null values
+? Total records : COUNT(*)
+? Can write expression as : SUM(col1 * 1.1) AS some_col
+? Excluding duplicates : COUNT(DISTINCT client_id) AS ...
+
+- The GROUP BY Clause
+? Using aggreagating function also grouping based on a column. (Total sales per client)
+? SELECT client_id, SUM(invoice_total) AS total_sales
+FROM invoices
+GROUP BY client_id
+ORDER BY total_sales DESC
+? Group by multiple columns
+SELECT ...
+FROM ...
+JOIN clients USING (client_id)
+GROUP BY state, city
+We get each record for every combination of columns in 
+Group By clause.
+? When using GROUP BY, expression in SELECT should be
+in GROUP BY clause,  contains aggregated column, or 
+dependent upon a column in GROUPY BY clause.
+? Standard practice : All columns in SELECT (except 
+aggregated column) should be in GROUP BY clause.
+
+- The HAVING Clause
+? For filtering after GROUP BY
+? Only variables/cols from SELECT statement can be used.
+? In WHERE Clause groupby alias cannot be used. For filtering
+before GROUP BY.
+? SELECT client_id, SUM(...) AS total_sales
+FROM ... GROUP BY ... 
+HAVING total_sales > 500 AND condition2
+
+- The ROLLUP operator
+? Only availabe in MySQL
+? Used with group by as
+GROUP BY ... WITH ROLLUP
+? Gets summary values for each group by combination.
+? Alias cannot be used in GROUP BY when using ROLLUP
 
 
 
