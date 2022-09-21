@@ -383,6 +383,83 @@ HAVING total_sales > 500 AND condition2
 GROUP BY ... WITH ROLLUP
 ? Gets summary values for each group by combination.
 ? Alias cannot be used in GROUP BY when using ROLLUP
+----------------------------------------------------------------------
+
+Section 6 : Writing Complex Query
+
+- Subqueries
+? are select statement used inside another statement.
+? SELECT * FROM table WHERE col > (SELECT ...)
+
+- The IN Operator
+? When subquery returns list of values
+? SELECT * FROM ... WHERE ... NOT IN (SELECT ...)
+
+- Subqueries vs Joins
+? Sometimes a query can be written using both subqueries and 
+joins
+? SELECT * FROM clients
+WHERE client_id NOT IN (SELECT DISTINCT client_id FROM invoices)
+? SELECT * FROM clients
+LEFT JOIN invoices USING (client_id)
+WHERE invoice_id IS NULL
+? Which to use depends on :
+Performance and code readability
+? When both queries has same performance then prefer
+for most readable.
+? Most of the time subquery option is more readable than join.
+
+- The ALL Keyword
+? "> (SELECT MAX(col) ...)" is equivalent to 
+"> ALL (query returning list)"
+? WHERE col <operator> ALL (query returning list)
+? Returns true when condition is true for all items in 
+subqueries list
+
+- The ANY Keyword
+? "IN" is equivalent to "= ANY".
+? Returns true when condition is true for any one or more  
+items in subqueries list
+
+- Correlated Subqueries
+? When subquery has reference to outer query.
+? Using correlated subquery is slow, as subquery is called for 
+every row.
+? SELECT * FROM employees e
+WHERE salary > (SELECT AVG(salary) FROM employees
+    WHERE office_id = e.office_id)
+
+- The EXISTS Operator
+? Replacement of IN and JOIN
+? Used when records are large in subquery, to increase 
+performance.
+? IN returns all records in subquery/JOIN then checks
+? EXISTS checks for first occurence in subquery then 
+immediately returns true.
+? SELECT * FROM clients c
+WHERE EXISTS (SELECT client_id FROM invoices WHERE
+client_id = c.client_id)
+? IN version
+SELECT * FROM clients c
+WHERE client_id IN  (SELECT client_id FROM invoices)
+
+- Subqueries in the SELECT Clause
+? Alias of subquery can be used in arithmetic expression in another subquery 
+in select clause
+? Using alias in SELECT statement using select clause
+? SELECT col1, (SELCT AVG(col2) FROM table) AS alias1,
+col3 - (SELECT alias1) AS alias2 FROM table
+
+- Subqueries in the FROM Clause
+? Subquery in from clause becomes a table input for from.
+? SELECT ...
+FROM (SELECT ...) AS table
+WHERE ... ....
+? Views can be used in FROM clause.
+? Alias is required for subquery in FROM clause.
+
+
+
 
 
 
