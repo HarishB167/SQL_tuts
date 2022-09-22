@@ -457,6 +457,97 @@ FROM (SELECT ...) AS table
 WHERE ... ....
 ? Views can be used in FROM clause.
 ? Alias is required for subquery in FROM clause.
+----------------------------------------------------------------------
+
+Section 7 : Essential MySQL Functions
+
+- Numeric Functions
+* ROUND(number[, places])
+number - number to round
+places - digits after decimal
+* TRUNCATE(number, places)
+Removes the digits
+* CEILING(number)
+* FLOOR(number)
+* ABS(number) : absolute value
+* RAND() : random float number b/w 0 and 1.
+* See complete list : search for mysql numeric functions
+
+- String Functions
+* LENGTH(string) : get no of chars
+* UPPER(string) : convert to uppercase
+* LOWER(string) : convert to lowercase
+* Removing unnecessary spaces
+LTRIM(string) : left side trim
+RTRIM(string) : right side trim
+TRIM(string) : both side trim
+* LEFT(string, count)
+Get count no of chars from left side of string.
+* RIGHT(string, count)
+Get count no of chars from right side of string.
+* SUBSTRING(string, start[, length])
+* LOCATE(searchstring, string) 
+Gets position of string in another string.
+Not case sensitive.
+If not found returns 0.
+* REPLACE(string, toreplace, replacewith)
+* CONCAT(string1, string2, ...)
+* See complete list : mysql string functions
+
+- Date Functions
+* NOW() : get current date and time
+* CURDATE() : get current date only
+* CURTIME() : get current time only
+* YEAR(NOW()) : get current year from date time object
+* MONTH(NOW())
+* DAY(NOW()) : get current date
+* HOUR(NOW()), MINUTE(NOW()), SECOND(NOW())
+* DAYNAME(NOW()), MONTHNAME(NOW())
+* EXTRACT(unit FROM NOW())
+available in other db management systems
+unit : YEAR, DAY, MONTH, SECOND etc
+
+- Formatting Dates and Times
+* DATE_FORMAT(dateTimeValue, 'format string')
+format string : %y (2 digit year), %Y (4 digit year),
+%m (2 digit month), %M (month name), %d (date)
+* Reference : search mysql date format string
+* TIME_FORMAT(dateTimeValue, 'format')
+format : %H (hour), %i (minutes), %p (pm or am)
+
+- Calculating Dates and Times
+* DATE_ADD(NOW(), INTERVAL 1 DAY)
+* DATE_SUB(NOW(), INTERVAL 1 DAY)
+* DATEDIFF('2019-01-05', '2019-01-01') : returns difference in days
+* TIME_TO_SEC('09:00')
+returns no of seconds elapsed since midnight
+
+- The IFNULL and COALESCE Functions
+* IFNULL(val1, val2)
+Substitute val1 with val2 if val1 is null
+* COALESCE(val1, val2, ...)
+Gets first non null value.
+* Using in select statement on columns.
+
+- The IF Function
+* Conditionally returning values, (option for UNION)
+* IF(expression, value_if_true, value_if_false)
+* SELECT order_id, order_date, 
+    IF(YEAR(order_date) = YEAR(NOW()), 'Active', 'Archived') AS category
+FROM orders
+
+- The CASE Operator
+* When multiple conditions are required.
+* SELECT order_id,
+CASE
+        WHEN YEAR(order_date) = YEAR(NOW()) THEN 'Active'
+        WHEN YEAR(order_date) = YEAR(NOW()) - 1 THEN 'Last year'
+        WHEN YEAR(order_date) < YEAR(NOW()) - 1 THEN 'Archived'
+        ELSE '...'
+END AS category
+FROM orders
+
+
 
 
 
