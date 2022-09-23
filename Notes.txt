@@ -546,6 +546,50 @@ CASE
         ELSE '...'
 END AS category
 FROM orders
+----------------------------------------------------------------------
+
+Section 8 : Views
+
+- Creating Views
+? For saving complex queries in database (not data).
+? CREATE VIEW view_name AS SELECT ...
+? Stored in views folder in database
+? View can be accessed similar to table
+SELECT * FROM view_name ...
+? Can be joined with other tables.
+? Behave like virtual table. But not store data.
+
+- Altering or Dropping Views
+? Dropping
+DROP VIEW view_name;
+? Altering 
+CREATE OR REPLACE  VIEW view_name AS SELECT ...
+? Normally views creating statement are saved in file named by 
+view name, and put in source control.
+
+- Updatable Views
+? Views can be used in update and delete statements
+when view doesn't have - DISTINCT keyword, Aggregate
+functions, Group by / Having, Union. And insert statement
+also requires all required columns in the view.
+
+- The WITH CHECK OPTION Clause
+? To prevent updation of record through view, so that row
+disappears from views result. Error is return when tried to do
+so.
+? Declare view as
+CREATE OR REPLACE VIEW view_name AS
+SELECT ... FROM ... WHERE ...
+WITH CHECK OPTION
+
+- Other Benefits of Views
+? Simplify queries
+? Reduce the impact of changes
+Table can be changed. And view can access table and return data in same format as before (renaming column and joining 
+splitted tables).
+? Restrict access to the data - (exclude columns / filter rows)
+
+
 
 
 
