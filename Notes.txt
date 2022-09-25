@@ -719,6 +719,93 @@ stored procedure : proc_, procFuncName
 no prefixing
 ? Delimieter : $$, //
 ? Stick to already used conventions in a project, for new project one can use other conventions.
+-------------------------------------------------------------------------------
+
+Section 10 : Triggers and Events
+
+- Triggers
+* A block of SQL code that automatically gets executed
+before or after an insert, update or delete statement.
+* Used to enforce data consistency.
+Updating payment_total in invoices when a payment occurs.
+* Naming trigger : tablename_(after/before)_action
+action - insert/update/delete
+* In triggers only tables other than triggering table can be modified.
+Because changing same table will make trigger fire itself, 
+causing infinite loop.
+* NEW keyword : last row inserted
+* OLD keyword : last row updated/deleted
+* DELIMITER $$
+CREATE TRIGGER payments_after_insert
+    AFTER INSERT ON payments
+    FOR EACH ROW
+BEGIN
+    UPDATE invoices
+    SET payment_total = payment_total + NEW.amount
+    WHERE invoice_id = NEW.invoice_id;
+END$$
+DELIMITER ;
+* FOR EACH ROW - trigger is fired for each row
+* Some dbms supports table level triggers - fired only once
+(when bulk insert/update/delete happens).
+
+- Viewing Triggers
+* SHOW TRIGGERS
+* Filtering for table
+SHOW TRIGGERS LIKE 'table%'
+
+- Dropping Triggers
+* DROP TRIGGER IF EXISTS trigger_name
+
+- Using Triggers for Auditing
+* Logging changes to data for auditing
+Logging insertion/deletion of record (in a table)
+* Create a table for logging changes as
+USE sql_invoicing;
+CREATE TABLE payments_audit( client_id INT NOT NULL,
+date DATE NOT NULL, amount DECIMAL(9,2) NOT NULL,
+action_type VARCHAR(50) NOT NULL,
+action_date DATETIME NOT NULL)
+* Change triggers as
+BEGIN
+    ...
+    INSERT INTO payments_audit
+    VALUES (NEW.client_id, NEW.date, NEW.amount, 'Insert', NOW());
+END $$ 
+For deletion change NEW to OLD and Insert to Delete.
+* In real applications, general structure of table for logging changes
+is created, so changes of all tables can be logged.
+
+- Events
+* A task (or block of SQL code) that gets executed according to a 
+schedule.
+* Automate db maintenance tasks (Deleting stale data, copying data
+from a table to archieve table, aggregating data to generate reports)
+* Turn on MySQL Event scheduler
+Process running in background, looking for events to run.
+View all system variables in mysql : SHOW VARIABLES;
+Turn on event scheduler : SET GLOBAL event_scheduler = ON;
+* Creating event
+interval : once, yearly, monthly, hourly, daily etc.
+DELIMITER $$
+CREATE EVENT <interval>_delete_stale_audit_rows
+ON SCHEDULE
+    --- once : AT '2019-05-01'
+    EVERY 1 HOUR [START '2019-01-01'] [END '2029-01-01']
+DO BEGIN
+    DELETE FROM payments_audit
+    WHERE action_date < NOW() - INTERVAL 1 YEAR;
+END $$
+DELIMITER ;
+
+- Viewing, Dropping and Altering Events
+* View : SHOW EVENTS [LIKE 'pattern'];
+* Drop : DROP EVENTS IF EXISTS event_name;
+* Alter : Copy CREATE EVENT statement, replace CREATE with ALTER
+> Templorarily disable/enable event
+ALTER EVENT event_name DISABLE/ENABLE;
+
+
 
 
 
