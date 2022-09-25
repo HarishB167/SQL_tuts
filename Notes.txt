@@ -588,6 +588,139 @@ WITH CHECK OPTION
 Table can be changed. And view can access table and return data in same format as before (renaming column and joining 
 splitted tables).
 ? Restrict access to the data - (exclude columns / filter rows)
+----------------------------------------------------------------------
+
+Section 9 : Stored Procedures
+
+- What are Stored Procedures
+? is a database object that contains a block of SQL code.
+? In external application these procedures can be called to get
+data.
+? Store and organize SQL code
+? Faster execution
+? Data security - (remove direct access to table. Allow CUD 
+operation by stored procedure. Set permissions on stored
+procedure.)
+
+- Creating a Stored Procedure
+? DELIMETER change is required, because statements in
+creating procedure need to be passed as single unit.
+? Change delimeter as : DELIMITER <symbol to use>
+? Creating procedure
+DELIMITER $$
+CREATE PROCEDURE get_clients()
+BEGIN
+    SELECT ...;
+    SELECT ...;
+    ...
+END$$
+DELIMITER ;
+? Calling procedure
+CALL <procedure_name>()
+
+- Dropping Stored Procedures
+? DROP PROCEDURE IF EXISTS <procedure_name>
+? Good practice : to store code for creating and dropping
+stored procedures in sql file and put in version control.
+
+- Parameters
+? To pass value to stored procedure
+? To sent values to calling program
+? CREATE PROCEDURE <prod_name>(state CHAR(2))
+? Error is created when proper parameters are not passed.
+
+- Parameters with Default value
+? CREATE PROCEDURE ...
+BEGIN
+    IF param IS NULL THEN
+        SET param = defautValue;
+    END IF;
+    SELECT ...
+END$$
+? For using default value, NULL is to be passed as parameter.
+? Returning all when by default
+...
+BEGIN
+    IF param IS NULL THEN
+       SELECT.. return all...
+    ELSE
+       SELECT with param filter
+    END IF;
+END$$
+> Another way
+...
+BEGIN
+   SELECT * FROM table t
+   WHERE t.col = IFNULL(param, t.col);
+END$$
+
+- Parameter Validation
+? Error codes : search sqlstate errors > ibm site
+? Error can be generated during validation.
+? CREATE PROCEDURE ...
+BEGIN
+     IF ...condition... THEN
+         SIGNAL SQLSTATE '<error code>'
+             SET MESSAGE_TEXT = '<message>';
+     END IF;
+
+     UPDATE table t
+     SET t.col = val
+     WHERE t.id = id;
+END
+? Only absolute essential validation need to be done in SQL.
+? Other validation to be done by application using database.
+
+- Output parameters
+? SELECT ... INTO ... FROM ... statement is used
+? CREATE PROCEDURE <prod_name>(
+   param1 INT, OUT outparam1 INT, OUT outparam2 INT)
+BEGIN
+      SELECT val1, val2
+      INTO outparam, outparam
+      FROM ...
+END
+? User defined variables in SQL
+set @var1 = val;
+? Avoid using output parameters as much possible.
+
+- Variables
+? Variables remain in memory during entire client session
+? Variables a freed up when client disconnects.
+? Called as user / session variables
+? Defined as
+SET @val_name = 0;
+? Local variable : variable defined in stored procedure or function.
+Freed up after execution of procedure/function.
+> Declared as : DECLARE var1 DECIMAL(9,2) [DEFAULT 0];
+> Set as : SET var1 = val;
+
+- Functions
+? Function can only return single value.
+? Function should have atleast one attribute
+DETERMINISTIC : always outputs same for same input
+READS SQL DATA : will read data, select statement
+MODIFIES SQL DATA : will modify data (insert, update or delete)
+? CREATE FUNCTION <func_name>(params...)
+RETURNS INTEGER
+<Function Attributes>
+BEGIN
+    ...
+    RETURN val;
+END
+? Function can be used in SQL statements.
+? Dropping function
+DROP FUNCTION IF EXISTS <func_name>;
+
+- Other Conventions
+? prefixing
+functions : fn_
+stored procedure : proc_, procFuncName
+no prefixing
+? Delimieter : $$, //
+? Stick to already used conventions in a project, for new project one can use other conventions.
+
+
 
 
 
