@@ -804,6 +804,87 @@ DELIMITER ;
 * Alter : Copy CREATE EVENT statement, replace CREATE with ALTER
 > Templorarily disable/enable event
 ALTER EVENT event_name DISABLE/ENABLE;
+-------------------------------------------------------------------------------
+
+Section 11 : Transactions and Concurrency
+
+- Transactions
+? A group of SQL statements that represent a single unit of work.
+? All statement should be completed successfully or all should fail.
+? ACID Properties
+Atomicity : like atoms, unbreakable, all success/fail.
+Consistency : DB remains in consistent state.
+Isolation : Transaction is isolated from another transaction, if they try
+to modify same data (effected rows are locked by a transaction).
+Durability : Once transaction commited, then changes by transaction
+are permanent (no loss during crash/power failure).
+? On failure all changes are rolled back.
+
+- Creating Transactions
+? COMMIT to commit transaction, ROLLBACK to rollback all changes
+(used in if else on a condition).
+? START TRANSACTION;
+INSERT ...
+VALUES ...;
+INSERT ... VALUES ...;
+COMMIT / ROLLBACK;
+? system variable - autocommit : On execution of single statement,
+mysql puts statement in transaction and commits it if no error raised.
+
+- Concurrency and Locking
+? By default mysql - locks row during a transaction.
+
+- Concurrency Problems
+? Lost Updates : When 2 transactions try to update same data
+without using locks. Last transaction will overwrite first one.
+Use locking to prevent that.
+? Dirty Reads : When a transaction reads uncommitted data.
+Prevent it by providing isolation - Read Committed.
+? Non-repeating Reads : Reading something twice and getting
+different results (2nd read occurring in subquery), due to 
+change of value by another transaction. Prevent it by
+providing isolation - Repeatable Read
+? Phantom Reads - When in a read data transaction it selects
+data from table based on a condition, and other transaction 
+updates data in table so that more data becomes 
+eligible/ineligible for selection in first transaction but is not 
+read by it. So, read by first transaction is called as phantom read. Prevent it by providing isolation - Serializable 
+(Transactions runs sequentially)
+System can slow down using this isolation.
+Reserve this for only very essential scenarios.
+
+- Transaction Isolation Levels
+? Read uncommitted - No protection
+? Read Committed - Dirty Reads
+? Repeatable Read - Lost Updates, Dirty Reads, Non-repeating Reads
+? Serializable - Lost Updates, Dirty Reads, Non-repeating Reads, Phantom Reads
+? Increasing isolation level - more performance and scalability
+problems are experienced, more locks.
+? Lower isolation level - more user can access data, but more 
+concurrency problems.
+? MySQL default isolation level - Repeatable Read
+? View isolation level : SHOW VARIABLES LIKE 'transaction_isolation';
+? Set transaction isolation level for next transaction
+SET TRANSACTION ISOLATION LEVEL <level_name>;
+level_name : SERIALIZABLE, READ UNCOMMITTED,
+? Set isolation level for session
+SET SESSION TRANSACTION ISOLATION LEVEL <level_name>;
+This is used in external applcation when connecting to MySQL.
+? Set isolation level globally for all sessions
+SET GLOBAL TRANSACTION ISOLATION LEVEL <level_name>;
+
+- Deadlocks
+? When different transactions cannot complete, because each
+transaction holds a lock that the other needs. Both 
+trasanction keep waiting on each other.
+? MySQL creates error 1213 Deadlock found. And rollbacks the transaction.
+? Minimize deadlocks :
+Correct order of statements in multiple transactions.
+Keep transaction small and short in duration.
+Schedule large transaction to run on Non-peak hours.
+
+
+
 
 
 
