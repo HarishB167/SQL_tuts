@@ -882,20 +882,108 @@ trasanction keep waiting on each other.
 Correct order of statements in multiple transactions.
 Keep transaction small and short in duration.
 Schedule large transaction to run on Non-peak hours.
+-------------------------------------------------------------------------------
 
+Section 12 : Data Types
 
+- Introduction
+* MySQL Data Types
+String, Numeric, Date and Time, Blob, Spatial (for storing geometry or
+geographical values)
 
+- String Types
+* CHAR(x) - fixed length
+* VARCHAR(x) - variable length, max size is 65,535 (~64 KB), longer 
+strings will be abbreviated.
+* MEDIUMTEXT - max size : 16MB
+good for storing - JSON object, CSV string, short to medium length books
+* LONGTEXT - max size : 4GB, for text books and log files
+* TINTYTEXT - max size : 255 bytes
+* TEXT - max size : 64KB
+* Prefer varchar over tinytext and text, as varchar can be indexed.
+* Be consistent in size e.g -
+short strings - VARCHAR(50)
+medium-length - VARCHAR(255)
+* Bytes size
+English language - 1 Byte, European middle-eastern - 2 Bytes,
+Asian - 3 Bytes
 
+- Integer Types
+* To store whole number
+* TINYINT - 1B - [-128,127]
+* UNSIGNED TINYINT - 1B - [0,255]
+* SMALLINT - 2B - [-32K, 32K]
+* MEDIUMINT - 3B - [-8M, 8M]
+* INT - 4B - [-2B, 2B]
+* BIGINT - 8B - [-9Z, 9Z]
+* Storing value bigger than capacity will create error.
+* Zerofill - for zero padding values - INT(padding)
+It only effects only method of display not storing.
 
+- Fixed-point and Floating-point Types
+* Fixed-point : fixed number of digits after decimal point.
+DECIMAL(precision, scale)
+precision - max no of digits (1 to 65)
+scale - no of digits after decimal point.
+Synonyms of DECIMAL : DEC, NUMERIC, FIXED
+* FLOAT, DOUBLE : for scientfic calculations, don't store exact values.
+FLOAT - 4b, DOUBLE - 8b
 
+- Boolean Types
+* BOOL, BOOLEAN (are synonyms for TINYINT)
+(internally TRUE is 1 and FALSE is 0)
 
+- Enum and Set Types
+* For restricting value of a column to a limited list of strings.
+* ENUM(val1, val2, val3, ...) : is case insensitive.
+should avoid them, changing members of enum is expensive
+as table will rebuild, enums are not reusable.
+* SET(...) : similar to enum but can store multiple values.
 
+- Date and Time Types
+* DATE
+* TIME
+* DATETIME - 8b
+* TIMESTAMP - 4b - can store upto year 2038
+* YEAR - for 4 digit year
 
+- Blob Types
+* For storing large amount of binary data.
+(images, videos, pdfs, etc)
+* TINYBLOB - 255b
+* BLOG - 65KB
+* MEDIUMBLOB - 16MB
+* LONGBLOB - 4GB
+* It is better to keep files out of database.
+As db size will increase, and slow down backups.
+Performance problems.
+More code to read/write images.
 
-
-
-
-
+- JSON Type
+* Lightweight format for storing and transferring data over the Internet.
+* E.g. - For storing properties of a product. Different product have
+different properties.
+* Available in MySQL versoin >= 8
+* JSON
+* Creating JSON objects
+UPDATE products
+SET properties = '{"key" : "value"}'
+WHERE ...;
+* Using JSON_OBJECT function
+SET properties = JSON_OBJECT(key1, val1, 
+    key2, JSON_ARRAY(1,2,3), key3, val3, ...)
+* Extracting JSON data
+JSON_EXTRACT(json_obj, path)
+$ represents current json doc, period for accessing key values.
+SELECT product_id, JSON_EXTRACT(propertis, '$.key1')
+FROM ... WHERE ...;
+* Using column path operator
+SELECT product_id, properties -> '$.keyWithArrayVal[0]'
+using '->>' makes "val" into val (without quotes)
+* To update JSON object in column
+SET properties = JSON_SET(oldJsonObj, '$.key1', val1, '$.keyNew', newVal2)
+* Removing key value pair from JSON object
+SET properties = JSON_REMOVE(jsonObj, key1, '$.key2')
 
 
 
