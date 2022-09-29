@@ -1,0 +1,296 @@
+
+Section 13 : Designing Database
+
+- Introduction
+* Well designed database
+Requires time to design. Easily extend to support new business 
+requirement. Easy and fast queries.
+* Poorly designed database : Requires more maintenance, cost of
+maintenance increases over time. Disables to support new business
+requirements.
+
+- Data Modelling
+* Process of creating a model for data to be stored in database.
+* 4 Steps
+* Understand the requirements
+Most important step (and is slow).
+Talk to business stake holders, domain experts, end users.
+Look at existing forms, documents, applications, spreadsheets,
+databases etc. anything related to problem domain.
+* Build a Conceptual Model (of business)
+Identifying entities / things / concepts in the business and relationships
+between them.
+Visual representation of these concepts to communicate with stake 
+holders (to make both on same page).
+* Build a Logical Model
+By refining conceptual model into data model or data structure for
+storing data.
+Abstract data model independent of database technology.
+Shows tables or columns needed.
+* Build a Physical Model
+By refining logical model into physical model for a specific database 
+management system.
+Implementation of logical model for a particular DB technology.
+E.g. - exact data types, default values, nullable, primary keys, views,
+stored procedures, triggers etc.
+
+- Conceptual Models
+* Represents the entities and their relationships.
+People, events, locations, student, course etc.
+* Visually see entities and relationships
+Entity Relationship (ER), UML
+* Entity Relationship Diagrams
+Microsoft Visio, draw.io, Lucidcharts
+* Data modelling is an iterative process. 
+* Creating Diagram
+Create entity object - student (name, email, dateRegistered),
+course (title, price, instructor, tags)
+give name and add attributes
+> Add relationship - many to many and give label 'enrolls'
+
+- Logical Models
+* Abstract data model independent of DBMS.
+* Declare type of each attribute - string, int, date etc.
+* Split attributes like name into first name and last name, similary
+address etc.
+* Adding type of relationship
+* Introduce new entities representing relationships if relationships
+demands attributes.
+enrollment - date, student, course, price
+* Entities here end up as table in database.
+
+- Physical Models
+* Implementation of Logical model on a specific DBMS.
+* EER - Enhanced Entity Relationship
+* In MySQL Workbench > File > New Model
+Change db name to school
+Add Diagram > Add Table students and courses
+> Add attributes in table as
+students : first_name, last_name, email, date_registered
+courses : title, price, instructor, tags
+enrollments : date, price
+
+- Primary Keys
+* Is a column uniquely identifing each record
+* Composite primary key : that has multiple columns
+* Primary key should not change.
+* Add id column to use as primary key with INT data type, with 
+auto increment checked.
+
+- Foreign Keys
+* In a relationship
+one is a parent - primary key table
+another is a child - foreign key table
+* Create one to many rel b/w students and enrollments, select child 
+first then students.
+* Similarly b/w courses and enrollments.
+* Add primary key to enrollments table : here use composite primary 
+key, by using student_id and course_id, make both as primary key.
+
+- Foreign Key Constraints
+* Protects data from corrupting : set constraints on the foreign key.
+* update constraint to CASCADE and delete constraint depends upon
+situation (most of the time we RESTRICT/NO ACTION and sometime
+CASCADE)
+In Table > Foreign Key tab > Change Foreign Key Options for every
+Foreign Key Name
+
+- Normalization
+* To not allow redundant or duplicate data.
+* Process of reviewing design and ensuring following of predefined
+rules that prevent data duplication. There are 7 rules called 7 normal
+forms, each rule assumes previous rule is applied.
+* For 99% time only first 3 normal forms are sufficient.
+
+- First Normal Form (1NF)
+* Each cell should have a single value and we cannot have 
+repeated columns (columns for tag1, tag2 etc).
+* Take this column out and model as separate table - tags.
+
+- Link Tables
+* Many to many relationships are not present in relational DBs.
+* To implement same, a new table called link table is created
+(course_tags), having parent on both tables (courses, tags), 
+and will consist of composite primary key.
+
+- Second Normal Form (2NF)
+* Every table should describe one entity, and every column in
+that table should describe that entity.
+* Column describing other than the entity should be put in other
+table.
+* It will save space, easily changeable.
+
+- Third Normal Form (3NF)
+* A column in a table should not be derived from other 
+columns.
+
+- Pragmatic Advice
+* Don't memorize rules
+* Focus on removing redundancy
+* Whenever 2 duplicate values appear and are not foreign keys,
+that means design is not normalized.
+* Think about how to eliminate duplication.
+* E.g. - Customer having multiple shipping addresses.
+* Think about logical entities and their relationships.
+* Importance of Business Requirements.
+* Start with conceptual model first.
+* Don't model the universe.
+
+- Don't model the universe
+* Problems
+Forget about projects scope, context, requirements.
+6th normal form
+Benefits on paper, in reality is false.
+Complex and slow query for simple result.
+* Solve today's problems, not future problems that may never
+happen.
+* Proud in taking complex problem and simplifying it.
+* Unpredictable changes will happen, because they depend on
+business and CEO.
+* Migrating data will happen.
+
+- Forward Engineering a Model
+* MySQL workbench
+* Converting EER diagram model to a real database
+* Database > Forward Engineer
+Select Connection > Next > Next > Next > Review script
+or Save or Copy > Next > Commit to database.
+
+- Synchronizing a Model with a Database
+* If only 1 person uses database
+Open table in Design mode
+* For database having multiple users.
+Should be able to replicate changes of 1 db to other dbs.
+In Model EER make changes and synchronize with db.
+MySQL will temporarily drop relationships to apply changes.
+Database > Synchronize Model > Select connection >
+Next > Next > See db name > Next > see tables will be updated 
+> Next > Review, save or copy SQL code > Save this script
+Check this script into source control.
+Execute this script into dbs.
+
+- Reverse Engineering a Database
+* For changing database not having model
+* Create model for database
+Close already open models (if open then mysql adds new model to this model).
+Database > Reverse Engineer... (mysql will create new model) >
+Select connection > Select database (select multiple only when 
+db are highly related) > Select Table > Next (new diagram will 
+be created)
+* To identify problems in the design
+* Help better understand design
+* Allow us to make changes and script those changes for other 
+databases.
+
+- Creating and Dropping Databases
+* CREATE DATABASE IF NOT EXISTS db_name;
+* DROP DATABASE IF EXISTS db_name;
+
+- Creating Tables
+* USE db_name;
+CREATE TABLE IF NOT EXISTS table_name 
+( col1 INT PRIMARY KEY AUTO_INCREMENT,
+  col2 INT NOT NULL DEFAULT 0, 
+  col3 VARCHAR(50) NOT NULL,
+  col4 VARCHAR(255) NOT NULL UNIQUE, ... );
+* Dropping table - DROP TABLE IF EXISTS table_name;
+
+- Altering Tables
+* Adding new column, modifying and dropping
+ALTER TABLE table_name
+    ADD colNew VARCHAR(50) NOT NULL AFTER col1,
+    ADD city VARCHAR(50) NOT NULL,
+    MODIFY COLUMN col1 VARCHAR(55) DEFAULT '',
+    DROP col2;
+* Do not alter table directly in production environment, first apply on
+test database.
+
+- Creating Relationships
+* CREATE TABLE IF NOT EXISTS orders
+( order_id INT PRIMARY KEY,
+  customer_id INT NOT NULL,
+  FOREIGN KEY fk_orders_customers (customer_id)
+    REFERENCES customers (customer_id)
+    ON UPDATE CASCADE
+    ON DELETE NO ACTION
+);
+* Apply foreign key constraint as
+FOREIGN KEY fk_childTable_parentTable (colUsedAsFrgnKey)
+    REFERENCES parentTable (pKeyColOfParentReferenced)
+    ON UPDATE CASCADE
+    ON DELETE NO ACTION
+* On update is cascade because - primary key can change due to
+accident, bug etc.
+* Now dropping of parentTable is not possible, because a child depend
+on it.
+
+- Altering Primary and Foreign Key Constraints
+* Altering, dropping primary and foreign key
+ALTER TABLE table_name
+    ADD PRIMARY KEY (col1, col2, ...),
+    DROP PRIMARY KEY, // when dropping no columns are mentioned.
+    DROP FOREIGN KEY fk_tableName_parentTable,
+    ADD FOREIGN KEY fk_tableName_parentTable (colUsdAsFrnKey)
+        REFERENCES parentTable (pKeyColOfParentReferenced)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION
+
+- Character Sets and Collations
+* Character Sets
+During storing MySQL converts string characters to numeric value 
+using character set. Character set is a table that maps every character 
+to a number.
+Types of character set - support latin only, asian only, all etc.
+* View Charset : SHOW CHARSET
+* Default charset - utf8 - supports all languages
+* Collation - how characters in different languages are sorted.
+Default collation for utf8 - utf8_general_ci (ci is case insensitive)
+* Maxlen - maximum byte required for storing a character.
+For utf8 is 3
+* Changing character set to reduce database size.
+Using visually or SQL
+* Changing character set Visually
+Only table and column level possible
+Right click db > Schema Inspector > View Default character set and 
+collation
+Open a table in design mode > char set/collation can be changed for
+any column or table.
+* Changing character set using SQL
+During creating db -
+CREATE DATABASE db_name
+    CHARACTER SET latin1
+For existing db - 
+ALTER DATABASE db_name
+    CHARACTER SET latin1
+For new table -
+CREATE TABLE table_name (...)
+CHARACTER SET latin1
+For existing table -
+ALTER TABLE table1
+CHARACTER SET latin1
+For column - 
+CREATE TABLE...
+( colName VARCHAR(50) CHARACTER SET latin1 ...constraints...column attributes..., ...);
+
+- Storage Engines
+* It determines how data is stored and what features are availabe.
+* MySQL has many storage engines
+* Viewing Engines : SHOW ENGINES;
+* Commonly used engines :
+InnoDB (default), MyISAM (old, used prior to v5.5)
+MyISAM doesn't have foreign keys
+* Storage engines can be changed at table level.
+Visually - In db design mode.
+Using SQL :
+ALTER TABLE tableName
+ENGINE = engineName
+* Changine storage engine can be expensive operation,
+mysql has to rebuild table and is not accessible. And do only in
+maintenance.
+
+
+
+
+
+
+
