@@ -174,6 +174,67 @@ Created by mistake.
 can be done by a already existing composite index, then 
 the single column index is redundant.
 ? Before creating new indexes, check the existing ones.
+-------------------------------------------------------------------------------------
+
+Section 15 : Securing Databases
+
+- Introduction
+? User accounts and priviliges
+
+- Creating a User
+? CREATE USER userName@<ip from user can connect>
+ip - 127.0.0.1 or localhost - for making user able to connect 
+from same computer. For application and database hosted 
+on same server.
+ip - somedomain.com - user can connect only from this 
+domain, but not from subdomain sub.somedomain.com.
+ip - "%.somedomain.com" - user can also connect from 
+domain or subdomain.
+? CREATE USER userName;
+user can connect from anywhere
+? CREATE USER userName IDENTIFIED BY 'password';
+Complete query to create user with password.
+
+- Viewing Users
+? 2 ways
+SELECT * FROM mysql.user;
+In MySQL workbench > Administration panel.
+
+- Dropping Users
+? DROP USER userName@<domain.com>;
+
+- Changing Passwords
+? 2 ways
+SET PASSWORD FOR userName = 'new password';
+For currently login user : SET PASSWORD = 'new password';
+In Mysql Workbench in Administration > Users and privileges.
+
+- Granting Privileges
+? Search mysql privileges to get list of privileges.
+? For web/desktop application
+Giveng select, insert, update, delete and executing stored
+procedures privilege to app account.
+GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE
+ON db_name.* // or db_name.table_name
+TO moon_app  // or moon_app@domain.com
+? For admins
+GRANT ALL
+ON *.*  // for all tables in all databases
+TO userName  // or userName@domain.com
+
+- Viewing Privileges
+? SHOW GRANTS FOR userName;
+? For current user : SHOW GRANTS;
+? In Mysql workbench Administration > Users and Privileges >
+userName > Administrative Roles and Scheme Privileges.
+
+- Revoking Privileges
+? REVOKE privileges...
+ON db_name.*
+FROM userName@domain.com
+
+
+
 
 
 
