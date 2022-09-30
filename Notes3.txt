@@ -1,0 +1,179 @@
+
+Section 14 : Indexing for High Performance
+
+- Introduction
+? Important in large databases and hight traffice websites.
+? Indexes speed up queries.
+
+- Indexes
+? Datastructure used by db engines to quickly find data.
+? Without index mysql will scan every record to find customer in a 
+particular state.
+? Creating index on customer table on state column
+equivalent to directory of customers sorted by state. It has state of
+customers and reference to records in table.
+? In lots of cases indexes are small and can be loaded in memory,
+so searching will be faster.
+? Cost of Indexes
+Increase the database size.
+Slow down the writes (updation of index is also required)
+? Reserve indexes for only performance critical queries
+? Design indexes based on queries, not tables.
+? Internally indexes are commonly stored as Binary Trees.
+
+- Creating Indexes
+? Expaining queries
+EXPLAIN SELECT ...
+See : type and rows column
+? type column
+ALL - full table scan, read every record from table
+ref - using index
+range - looking range of records
+? rows column - no of rows scanned
+? possible_keys column - indexes mysql might consider for query
+? key column - index picked by mysql for query
+? Creating index
+CREATE INDEX idx_colName ON tableName (colName)
+CREATE INDEX idx_state ON customers (state)
+
+- Viewing Indexes
+? SHOW INDEXES IN tableName;
+If primary key exists, then it will always include primary key index also called Clustered Index, and table can have only 1 clustered index.
+Other indexes are called Secondary Indexes.
+Collation column - how data is sorted, A - ascending, B - descending
+Cardinality column - estimated no of unique values in the index.
+Index_type - BTREE - Binary Tree, 
+? To get more accurate value : ANALYZE TABLE tableName
+this will regenerate statistics.
+? Indexes also include primary key of table with value of indexed column.
+? Indexes for foreign keys are also created automatically for the table
+so joining can be quick.
+? Attributes of index
+Type - BTREE etc
+Unique - No (if column indexed value have duplicates)
+Visible - Yes (Enabled)
+
+- Prefix Indexes
+? If index to be create is - Char, Varchar, Text or Blob
+Index may consume large space and not perform well.
+? Only first few characters are to be included in index
+? CREATE INDEX idx_lastname ON customers (last_name(20))
+? CREATE INDEX idx_colname ON table (colname(no))
+? Prefixing is optional for Char and Varchar but required for Text 
+and Blob.
+? Finding optimal number
+Include enough character, that uniquely identify each customer.
+Get no of records
+SELECT COUNT(*) FROM customers;
+Try various prefix lengths, targeting maximizing unique values in index
+SELECT 
+    COUNT(DISTINCT LEFT(last_name, 1)),
+    COUNT(DISTINCT LEFT(last_name, 5)),
+    COUNT(DISTINCT LEFT(last_name, 10))
+FROM customers;
+We get - 25, 966, 996
+So, 966 is optimal prefix length.
+
+- Full-text Indexes
+? To build fast and flexible search engines.
+? For blogs having particular text etc.
+? Using LIKE clause will be slow.
+? Work different from regular indexes.
+? They include the entire string columns, they ignore stop words 
+like - is, on, the, in etc.
+? They store list of words, and for each word they store list of 
+rows that these words appear in.
+? CREATE FULLTEXT INDEX idx_col1_col2 ON table (col1, col2);
+? CREATE FULLTEXT INDEX idx_title_body 
+ON posts (title, body);
+? Using index
+SELECT * FROM table
+WHERE MATCH(col1, col2, ...) AGAINST('words to search');
+SELECT * FROM posts
+WHERE MATCH(title, body) AGAINST('react redux');
+? It includes relevance score for each row, based on some 
+factors, score is float b/w 0 (no relevance) to 1 (high relevance).
+? Result is sorted in desc on relevancy score.
+? View relevancy score
+SELECT *, MATCH(col1, col2, ...) AGAINST('words to search')
+FROM table
+WHERE MATCH(col1, col2, ...) AGAINST('words to search');
+? It has 2 modes - natural language, boolean.
+Natural language - default
+Boolean - include/exclude certain words as
+AGAINST('word1 -word2 +word3 "word group" ' IN BOOLEAN MODE)
+
+- Composite Indexes
+? Indexes which are define on multiple columns as one.
+? When filtering with multiple columns, then mysql only uses 
+one index if they are defined for both, and other is done using
+standard table scan (scanning all rows).
+? Composite index is required for filtering with multiple columns,
+and using indexing feature for those columns.
+? Creating composite index
+CRAETE INDEX idx_col1_col2 ON table (col1, col2);
+CREATE INDEX idx_state_points ON customers (state, points);
+? In reality - most of the we use composite index. Becuase query
+can have multiple filters.
+? MySQL a index can 16 columns. Normally 4-6 columns are used.
+? Drop index : DROP INDEX <indexName> ON table;
+
+- Order of Columns in Composite Indexes
+? Starting point
+Put the most frequently used columns first.
+Put the columns with a higher cardinality first (unique values).
+? Create composite indexes using different orders, 
+check query using EXPLAIN clause, and choose right 
+composite index.
+? Force MySQL to use a particular index
+SELECT ... FROM ... USE INDEX (indexName) WHERE ...
+
+- When Indexes are Ignored
+? Using OR operator
+Use UNION instead of OR, and create index for remaining column.
+? Using indexed column in an expression (in WHERE clause)
+WHERE points + 10  > 2010; As expression is evaluated for
+each row.
+Avoid expressions and isolate columns as :
+WHERE points > 2000;
+
+- Using Indexes for Sorting
+? Indexes stores sorted values.
+? When using a column for ordering
+db engine uses index to sort values.
+Extra - Using index
+? When using non-indexed column for ordering
+db engine uses full table scan - type All,
+Extra - Using filesort (algorithm)
+? For composite index, columns in ORDER BY should be
+in same order and same direction (or all column in opposite
+direction) as of composite index.
+? View last query cost variable
+SHOW STATUS LIKE 'last_query_coast';
+? Design indexes so that it can be used to filter and sort data.
+? If we have index on columns (a, b), then we can sort by
+a; a,b; a,b; a DESC, b DESC
+? In composite index if first column is filtered with one value
+using WHERE, then second column can be used for ORDER BY.
+
+- Covering Indexes
+? Satisfying a query with indexes (without touching db tables).
+? When designing indexes :
+Look at columns used frequently in Where clause,
+and include those.
+Look at columns in ORDER BY clause and possibly include
+those.
+Then, look at columns in SELECT clause and possibly include
+those also.
+
+- Index Maintenance
+? Watch for Duplicate and Redundant Indexes
+? Duplicate Indexes - on same set of columns in same order.
+Created by mistake.
+? Redundant Indexes - when a work of single column index 
+can be done by a already existing composite index, then 
+the single column index is redundant.
+? Before creating new indexes, check the existing ones.
+
+
+
