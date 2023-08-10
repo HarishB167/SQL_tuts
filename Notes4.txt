@@ -4,7 +4,7 @@ https://stackoverflow.com/questions/11657829/error-2002-hy000-cant-connect-to-lo
 https://stackoverflow.com/questions/42153059/mysqld-safe-directory-var-run-mysqld-for-unix-socket-file-dont-exists
 Finally restart the pc.
 
-- Problems in importing a data
+- Problems in importing a dataset
 * MySQL not using utfmb4 character set
 * So change db to use this character set as :
 ALTER DATABASE your_database_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
