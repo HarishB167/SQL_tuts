@@ -10,3 +10,22 @@ Finally restart the pc.
 ALTER DATABASE your_database_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 * Then change the tables or, delete and recreate tables.
 ALTER TABLE your_table_name MODIFY COLUMN title VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+- Portable MySQL using
+* Ref : https://stackoverflow.com/questions/42045494/running-starting-mysql-without-installation-on-windows
+* 8.0.26+ version
+* Extract the main archive to the desired install directory (C:\mysql is the safe default choice)
+Initialize the data directory. The recent mysql distributions do not contain it. Go to C:\mysql\bin and type:
+mysqld --initialize --consol
+and save the password from the line:
+2021-11-03T21:33:13.455063Z 6 [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: yIQ_4Ra2Q9g)
+Run the db from bin directory
+mysqld --console
+Change the assigned random password. Open separate cmd windows and connect
+mysql -u root -p
+Enter the temporary password from point 3. The 'root' is default mysql user name. Then type:
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'root-password';
+* Using
+> Run mysql server as : mysqld --console
+> Then use any client - workbench, django app etc.
+
